@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rawchen.multitablejoin.mapper.BlogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.rawchen.multitablejoin.entity.Blog">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="description" property="description" />
+        <result column="views" property="views" />
+        <result column="category_id" property="categoryId" />
+    </resultMap>
+
+    <resultMap id="BlogDetailResultMap" type="com.rawchen.multitablejoin.entity.vo.BlogDetail">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="description" property="description" />
+        <result column="views" property="views" />
+        <association property="category" javaType="com.rawchen.multitablejoin.entity.Category">
+            <result column="category_id" property="id"/>
+            <result column="category_name" property="categoryName"/>
+            <result column="category_slug" property="categorySlug"/>
+        </association>
+        <collection property="tags" ofType="com.rawchen.multitablejoin.entity.Tag">
+            <id column="tag_id" property="id"/>
+            <result column="tag_name" property="tagName"/>
+            <result column="tag_count" property="tagCount"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, title, content, description, views, category_id
+    </sql>
+
+    <select id="selectAllBlogs" resultMap="BlogDetailResultMap">
+        select b.id,
+               b.title,
+               b.content,
+               b.description,
+               b.views,
+               c.id as category_id,
+               c.category_name,
+               c.category_slug,
+               t.tag_name,
+               t.tag_count,
+               t.id as tag_id
+        from (
+              (
+                (
+                    blog as b left join category as c on b.category_id = c.id
+                )
+                left join blog_tag as bt on b.id = bt.blog_id
+                )
+            left join tag as t on bt.tag_id = t.id
+            )
+    </select>
+
+</mapper>
