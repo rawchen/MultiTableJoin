@@ -23,7 +23,8 @@
             <result column="category_name" property="categoryName"/>
             <result column="category_slug" property="categorySlug"/>
         </association>
-        <collection property="tags" ofType="com.rawchen.multitablejoin.entity.Tag">
+<!--        <collection property="tags" ofType="com.rawchen.multitablejoin.entity.Tag">-->
+        <collection property="tags" ofType="com.rawchen.multitablejoin.entity.Tag" select="selectTagsByBlogId" column="id">
             <id column="tag_id" property="id"/>
             <result column="tag_name" property="tagName"/>
             <result column="tag_count" property="tagCount"/>
@@ -35,6 +36,29 @@
         id, title, content, description, views, category_id
     </sql>
 
+<!--    <select id="selectAllBlogs" resultMap="BlogDetailResultMap">-->
+<!--        select b.id,-->
+<!--               b.title,-->
+<!--               b.content,-->
+<!--               b.description,-->
+<!--               b.views,-->
+<!--               c.id as category_id,-->
+<!--               c.category_name,-->
+<!--               c.category_slug,-->
+<!--               t.tag_name,-->
+<!--               t.tag_count,-->
+<!--               t.id as tag_id-->
+<!--        from (-->
+<!--              (-->
+<!--                (-->
+<!--                    blog as b left join category as c on b.category_id = c.id-->
+<!--                )-->
+<!--                left join blog_tag as bt on b.id = bt.blog_id-->
+<!--                )-->
+<!--            left join tag as t on bt.tag_id = t.id-->
+<!--            )-->
+<!--    </select>-->
+
     <select id="selectAllBlogs" resultMap="BlogDetailResultMap">
         select b.id,
                b.title,
@@ -43,19 +67,14 @@
                b.views,
                c.id as category_id,
                c.category_name,
-               c.category_slug,
-               t.tag_name,
-               t.tag_count,
-               t.id as tag_id
+               c.category_slug
         from (
-              (
-                (
-                    blog as b left join category as c on b.category_id = c.id
-                )
-                left join blog_tag as bt on b.id = bt.blog_id
-                )
-            left join tag as t on bt.tag_id = t.id
+                blog as b left join category as c on b.category_id = c.id
             )
+    </select>
+
+    <select id="selectTagsByBlogId" resultType="com.rawchen.multitablejoin.entity.Tag">
+        select a.id, a.tag_name, a.tag_count from tag as a LEFT JOIN blog_tag as b ON b.`tag_id`=a.id where b.`blog_id` = #{id}
     </select>
 
 </mapper>

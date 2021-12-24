@@ -1,5 +1,6 @@
 package com.rawchen.multitablejoin.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.rawchen.multitablejoin.entity.vo.BlogDetail;
 import com.rawchen.multitablejoin.mapper.BlogMapper;
 import com.rawchen.multitablejoin.service.BlogService;
@@ -24,6 +25,7 @@ public class BlogServiceImpl implements BlogService {
 
 	@Override
 	public List<BlogDetail> selectAllBlogs() {
+		PageHelper.startPage(1, 2);
 		return mapper.selectAllBlogs();
 	}
 }
